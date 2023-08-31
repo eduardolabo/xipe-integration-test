@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    build: db
+    restart: always
+    ports:
+      - "27018:27017"
+    expose:
+      - "27018"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: webtest
+      MONGO_INITDB_ROOT_PASSWORD: webtestP4ssword
+      MONGO_INITDB_DATABASE: webtest
+  api:
+    build: api
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      MONGO_USER: webtest
+      MONGO_PASSWORD: webtestP4ssword
+      MONGO_BASE_DB: webtest
+      MONGO_PATH: db:27017
+      SESSION_SECRET: u0uDo7LN+Nh3vfVkKaFGkHvLidJuevlu
+      MONGO_CONNECTION_VERB: mongodb
+      NODE_ENV: development
+    volumes:
+      - ./api:/usr/src/app
+    command: bash -c "npm install && npm run gen:routes && npm run dev"
