@@ -41,7 +41,7 @@ class TrainerService {
         throw new HttpException(409, "You're not trainer");
     }
 
-    public async fightTrainer(trainerOneId: string, trainerTwoId: string): Promise<number> {
+    public async fightTrainer(trainerOneId: string, trainerTwoId: string): Promise<1|2> {
         const trainerOne = await this.trainer.findById(trainerOneId);
         const trainerTwo = await this.trainer.findById(trainerTwoId);
         const pokemonService = new PokemonService();
