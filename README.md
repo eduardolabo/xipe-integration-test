@@ -1,54 +1,37 @@
-# node-express-typescript-mongodb-swagger
+# PokeAPI Integration
 
-Environment
+## Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Visual Studio Code](https://code.visualstudio.com/download)
 
-```
-NPM: 8.19.2
-Node : 18.12.1 LTS
+## Getting Started
+1. Clone the repository.
+2. Open the project in Visual Studio Code.
+3. Open a terminal in Visual Studio Code.
+4. Run `docker compose up` to start the application.
 
-```
+## Swagger
+- http://localhost:8080/api/api-docs
 
-Please follw the below steps:
+## Credentials
+- Username: xipeadmin
+- Password: CarreraAdmin
 
-```
-git clone https://github.com/vipinkavlar/node-express-typescript-mongodb-swagger.git
-cd node-express-typescript-mongodb-swagger
-npm install
-npm update  //if required
-npm outdated //if required. Then update the required packages as given below;
-npm install ts-node@<suggestedVersionhere>
-npm install typescript@<suggestedVersionhere>
-npm install --save @types/node@18.11.15
-npm run dev
-```
+## Tournament Endpoint
+- GET http://localhost:8080/api/tournament
 
-Swagger documentation sample can be found at `http://localhost:<port>/api-docs`
+## Tools
+- [Postman](https://www.postman.com/downloads/)
+- [MongoDB Compass](https://www.mongodb.com/try/download/compass)
 
-# Form input validation
+## Debug in Visual Studio Code
+1. Open the project in Visual Studio Code.
+2. Open a terminal in Visual Studio Code.
+3. Run `docker compose -f docker-compose.debug.yml up` to start the mongodb container.
+4. Go to the debug tab in Visual Studio Code.
+5. Select `Debug API` from the dropdown.
+6. Click the play button to start debugging.
 
-Input validation is done through class-validator. The decorators are defined in src/dtos files.
-Two middleware can be used to process error responses.
-
-1. ../middlewares/validation.middleware
-2. ../middlewares/validationJsonResponse.middleware
-
-validationJsonResponse will output the response in JSON format as given below:
-
-```
-{
-	message : null,
-	data: null,
-	errorCode : 201
-	errorMessages : {
-		"email": {
-			"isNotEmpty": "email should not be empty",
-			"isEmail": "email must be an email"
-		},
-		"password": {
-			"isString": "password must be a string"
-		}
-	}
-}
-```
-
-validationMiddleware sends HTTP response. Usage of both middlewares can be seen in the routes/user.route.ts file
+## Known Issues
+- You need to delete the `api/node_modules` folder to switch between debug and docker mode.
