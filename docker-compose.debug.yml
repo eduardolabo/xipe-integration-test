@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  db:
+    build: db
+    restart: always
+    ports:
+      - "27018:27017"
+    expose:
+      - "27018"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: webtest
+      MONGO_INITDB_ROOT_PASSWORD: webtestP4ssword
+      MONGO_INITDB_DATABASE: webtest

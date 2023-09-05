@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "type": "npm",
+            "script": "build",
+            "path": "api",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "api:build",
+            "detail": "tsoa spec-and-routes && tsc"
+        }
+    ]
+}
