@@ -1,5 +1,5 @@
-import * as express from "express";
-import passport from "passport";
+import * as express from 'express';
+import passport from 'passport';
 
 export function expressAuthentication(
   request: express.Request,
@@ -17,7 +17,7 @@ export function expressAuthentication(
         { session: false, failureMessage: true, successMessage: true },
         (err: any, user: { permissions: string | string[]; }) => {
           if (err) reject(err);
-          if (user && !scope) resolve(user);
+          if (user && !scope?.length) resolve(user);
           if (
             user &&
             scope &&
