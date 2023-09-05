@@ -1,7 +1,6 @@
-import HttpException from "../exceptions/HttpException";
-import pokemonModel from "../models/pokemon.model";
-import {Pokemon} from "../models/pokemon.model";
-import {CreatePokemonDto} from "../dtos/pokemon.dto";
+import { CreatePokemonDto } from '../dtos/pokemon.dto';
+import HttpException from '../exceptions/HttpException';
+import pokemonModel, { Pokemon } from '../models/pokemon.model';
 
 class PokemonService {
     public pokemon = pokemonModel;
@@ -33,19 +32,22 @@ class PokemonService {
     }
 
     public async deletePokemon(pokemonId: string): Promise<Pokemon> {
-        const pokemon = await this.pokemon.findOneAndDelete({id: pokemonId});
+        const pokemon = await this.pokemon.findOneAndDelete({_id: pokemonId});
         if (pokemon) return pokemon;
         throw new HttpException(409, "You're not pokemon");
     }
 
     public async fightPokemon(pokemonOneId: string, pokemonTwoId: string): Promise<number> {
-        const pokemonOne= await this.pokemon.findOne({id: pokemonOneId});
-        const pokemonTwo= await this.pokemon.findOne({id: pokemonTwoId});
+        const pokemonOne = await this.pokemon.findOne({_id: pokemonOneId});
+        const pokemonTwo = await this.pokemon.findOne({_id: pokemonTwoId});
+
         if(!pokemonOne || !pokemonTwo){
             throw new HttpException(409, "You're not pokemon");
         }
+
         //get a random winner
         const winner = Math.floor(Math.random() * 2) + 1;
+        
         if(winner === 1){
             return 1;
         }
@@ -53,7 +55,6 @@ class PokemonService {
             return 2;
         }
     }
-
 }
 
 export default PokemonService;
