@@ -1,185 +1,156 @@
-import { CreateUserDto } from "../dtos/users.dto";
-import HttpException from "../exceptions/HttpException";
-import trainerModel from "../models/trainer.model";
-import { Trainer } from "../models/trainer.model";
-import tournamentModel from "../models/tournament.model";
-import pokemonModel from "../models/pokemon.model";
-import {Pokemon} from "../models/pokemon.model";
-import {Tournament} from "../models/tournament.model";
-import {CreateTournamentDto} from "../dtos/tournament.dto";
-import axios from "axios";
-
+import trainerModel from '../models/trainer.model';
+import { Trainer } from '../models/trainer.model';
+import tournamentModel from '../models/tournament.model';
+import pokemonModel from '../models/pokemon.model';
+import { Pokemon } from '../models/pokemon.model';
+import TrainerService from '../services/trainer.service';
+import { Tournament } from '../models/tournament.model';
+import { CreateTournamentDto } from '../dtos/tournament.dto';
+import { CreateTrainerDto } from '../dtos/trainer.dto';
+import axios from 'axios';
+import { CreatePokemonDto } from '../dtos/pokemon.dto';
 
 class TournamentService {
-    public trainer = trainerModel;
-    public tournament = tournamentModel;
-    public pokemon = pokemonModel;
+  private trainer = trainerModel;
+  private tournament = tournamentModel;
+  private pokemon = pokemonModel;
 
-    public async saveTournament(tournamentData: CreateTournamentDto): Promise<Tournament> {
-        return await (new this.tournament({
-            trainerOne: tournamentData.trainerOneId,
-            trainerTwo: tournamentData.trainerTwoId,
-            trainerThree: tournamentData.trainerThreeId,
-            trainerFour: tournamentData.trainerFourId,
-            champ: tournamentData.champId,
-        })).save() as unknown as Tournament;
+  constructor(
+    private readonly trainerService = new TrainerService(),
+    private readonly pokeapiUrl = 'https://pokeapi.co/api/v2'
+  ) { }
+
+  public async saveTournament(tournamentData: CreateTournamentDto): Promise<Tournament> {
+    return (await new this.tournament({
+      trainerOne: tournamentData.trainerOneId,
+      trainerTwo: tournamentData.trainerTwoId,
+      trainerThree: tournamentData.trainerThreeId,
+      trainerFour: tournamentData.trainerFourId,
+      champ: tournamentData.champId,
+    }).save()) as unknown as Tournament;
+  }
+
+  private mapTypes(types: { type: { name: string } }[]): string[] {
+    return types.map((x) => x.type.name);
+  }
+
+  private mapMoves(moves: { move: { name: string } }[]): string[] {
+    return moves.map((x) => x.move.name);
+  }
+
+  private async getRandomPokemon(): Promise<CreatePokemonDto> {
+    const randomPokemonId = Math.floor(Math.random() * 150) + 1;
+    const response = await axios.get(`${this.pokeapiUrl}/pokemon/${randomPokemonId}`);
+    const { name, moves, types, base_experience: level } = response.data;
+
+    const pokemonData: CreatePokemonDto = {
+      name,
+      types: this.mapTypes(types),
+      moves: this.mapMoves(moves),
+      level,
+    };
+
+    return pokemonData;
+  }
+
+  /**
+   * Create a random pokemon
+   * @returns
+   */
+  private async createRandomPokemon(): Promise<Pokemon> {
+    const randomPokemon = await this.getRandomPokemon();
+    const pokemon = await this.pokemon.findOne({ name: randomPokemon.name });
+    if (!pokemon) {
+      return await this.pokemon.create(randomPokemon);
     }
-    // Función para crear un entrenador aleatorio con 6 Pokémon
-    private async createRandomTrainer() {
-        const trainer: Trainer = {
-            name: `Trainer ${Math.floor(Math.random() * 72) + 1}`,
-            pokemonOne: undefined,
-            pokemonTwo: undefined,
-            pokemonThree: undefined,
-            pokemonFour: undefined,
-            pokemonFive: undefined,
-            pokemonSix: undefined,
-            isChamp: false,
-            _id: ""
-        }
+    return pokemon;
+  }
 
-        const numberNames = ["One", "Two", "Three", "Four", "Five", "Six"];
-        for (let i = 0; i < 6; i++) {
-            const randomPokemon = await this.getRandomPokemon();
-            // trainer[`pokemon${numberNames[i]}`] = randomPokemon;
-            switch (i) {
-                case 1:
-                    trainer.pokemonOne = randomPokemon;                    
-                    break;
-                case 2:
-                    trainer.pokemonTwo = randomPokemon;                    
-                    break;
-                case 3:
-                    trainer.pokemonThree = randomPokemon;                    
-                    break;
-                case 4:
-                    trainer.pokemonFour = randomPokemon;                    
-                    break;
-                case 5:
-                    trainer.pokemonFive = randomPokemon;                    
-                    break;
-                case 6:
-                    trainer.pokemonSix = randomPokemon;                    
-                    break;
-                default:
-                    break;
-            }
-          }
-        return trainer;        
+  /**
+   * Create a random trainer with 6 random pokemons
+   * @returns
+   */
+  private async createOneRandomTrainer(): Promise<Trainer> {
+    const trainerName = `Trainer #${Math.floor(Math.random() * 72) + 1}`;
+    // check if already exist the trainer
+    let trainer = await this.trainer.findOne({ name: trainerName });
+    if (!trainer) {
+      const pokemons = await Promise.all(
+        Array.from({ length: 6 }, () => this.createRandomPokemon())
+      );
+      const trainerData: CreateTrainerDto = {
+        name: trainerName,
+        pokemonOneId: pokemons[0]._id,
+        pokemonTwoId: pokemons[1]._id,
+        pokemonThreeId: pokemons[2]._id,
+        pokemonFourId: pokemons[3]._id,
+        pokemonFiveId: pokemons[4]._id,
+        pokemonSixId: pokemons[5]._id,
+        isChamp: false,
+      };
+      return await this.trainerService.createTrainer(trainerData);
     }
+    return trainer;
+  }
 
-    /**
-     * Create 4 random trainers with their 6 random pokemon consuming pokeapi.co and random data
-     * @returns 
-     */
-    private async createRandomTrainers(): Promise<Trainer[]> {
-        const trainers: Trainer[] = [];
-        for (let i = 0; i < 4; i++) {
-        const trainer = await this.createRandomTrainer();
-        trainers.push(trainer);
-        }
-        return trainers;
-    }
+  /**
+   * Create random trainers with their 6 random pokemon consuming pokeapi.co and random data
+   * @param count
+   * @returns
+   */
+  private async createManyRandomTrainers(count: number): Promise<Trainer[]> {
+    return Promise.all(Array.from({ length: count }, () => this.createOneRandomTrainer()));
+  }
 
-    /**
-     * Create a random pokemon
-     * @returns 
-     */
-    private async getRandomPokemon(): Promise<Pokemon> {
-        const randomPokemonId = Math.floor(Math.random() * 150) + 1;
-        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`)
-        return response.data;
+  private async resolveBattle(trainers: Trainer[]): Promise<Trainer> {
+    while (trainers.length > 1) {
+      const nextRoundWinners: Trainer[] = [];
 
-    }
+      for (let i = 0; i < trainers.length; i += 2) {
+        const [trainer1, trainer2] = trainers.slice(i, i + 2);
+        const winner = await this.trainerService.fightTrainer(trainer1._id, trainer2._id);
+        nextRoundWinners.push(winner === 1 ? trainer1 : trainer2);
+      }
 
-    public battle(trainer1: Trainer, trainer2: Trainer): Trainer {
-        // Battle logic here 
-        // Return the winning trainer
-        const winner = Math.floor(Math.random() * 2) + 1;
-        if(winner === 1){
-            return trainer1;
-        }
-        else{
-            return trainer2;
-        }
-        
-    }
-
-    public async startTournament(): Promise<Tournament> {
-        //TODO: Create 4 random trainers with their 6 random pokemon consuming pokeapi.co and random data
-        //TODO: Create tournament with 4 random trainers
-        //TODO: Fight 4 trainers until we get a winner
-        //TODO: Save and return Tournament
-        //not implemented
-
-        try {
-
-            const tournamentData: CreateTournamentDto = {
-                trainerOneId: "",
-                trainerTwoId: "",
-                trainerThreeId: "",
-                trainerFourId: "",
-                champId: "",
-            };
-
-            const trainers = await this.createRandomTrainers();
-            console.log('Tournament Participants:');
-            trainers.forEach((trainer, index) => {
-              console.log(`Trainer ${index + 1}: ${trainer.name}`);
-              switch (index) {
-                case 0:
-                    tournamentData.trainerOneId = trainer._id;
-                    break;
-                case 1:
-                    tournamentData.trainerTwoId = trainer._id;
-                    break;
-                case 2:
-                    tournamentData.trainerThreeId = trainer._id;
-                    break;
-                case 3:
-                    tournamentData.trainerFourId = trainer._id;
-                    break;
-                default:
-                    break;
-              }
-            });
-        
-            while (trainers.length > 1) {
-              const nextRoundWinners: Trainer[] = [];
-        
-              for (let i = 0; i < trainers.length; i += 2) {
-                const trainer1 = trainers[i];
-                const trainer2 = trainers[i + 1];
-        
-                const winner = this.battle(trainer1, trainer2);
-                nextRoundWinners.push(winner);
-              }
-        
-              trainers.length = 0; // Clear the current trainers array
-              trainers.push(...nextRoundWinners); // Move the winners to the next round
-            }
-        
-            const champ = trainers[0];
-            tournamentData.champId = champ._id;
-            console.log(`Tournament Winner: ${champ.name}`);
-        
-            return await this.saveTournament(tournamentData);;
-          } catch (error) {
-            console.error('Error:', error);
-            return {
-                createdAt: undefined,
-                trainerOne: undefined,
-                trainerTwo: undefined,
-                trainerThree: undefined,
-                trainerFour: undefined,
-                champ: null,
-                _id: ""
-            }
-          }        
-        // throw new HttpException(409, "Not implemented");
+      trainers.length = 0; // Clear the current trainers array
+      trainers.push(...nextRoundWinners); // Move the winners to the next round
     }
 
+    return trainers[0];
+  }
 
+  public async startTournament(): Promise<Tournament> {
+    //TODO: Create 4 random trainers with their 6 random pokemon consuming pokeapi.co and random data
+    //TODO: Create tournament with 4 random trainers
+    //TODO: Fight 4 trainers until we get a winner
+    //TODO: Save and return Tournament
+    //not implemented
+    try {
+      const trainers = await this.createManyRandomTrainers(4);
+      const tournamentData: CreateTournamentDto = {
+        trainerOneId: trainers[0]._id,
+        trainerTwoId: trainers[1]._id,
+        trainerThreeId: trainers[2]._id,
+        trainerFourId: trainers[3]._id,
+        champId: '',
+      };
+
+      console.log('Tournament Participants:');
+      trainers.forEach((trainer, index) => {
+        console.log(`${index + 1}: ${trainer.name}`);
+      });
+      
+      const champ = await this.resolveBattle(trainers);
+      tournamentData.champId = champ._id;
+      
+      console.log(`Tournament Winner: ${champ.name}`);
+
+      return this.saveTournament(tournamentData);
+    } catch (error) {
+      console.error('Error starting the tournament:', error);
+      throw new Error(error);
+    }
+  }
 }
 
 export default TournamentService;
