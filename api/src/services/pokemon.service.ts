@@ -39,8 +39,8 @@ class PokemonService {
     }
 
     public async fightPokemon(pokemonOneId: string, pokemonTwoId: string): Promise<number> {
-        const pokemonOne= await this.pokemon.findOne({id: pokemonOneId});
-        const pokemonTwo= await this.pokemon.findOne({id: pokemonTwoId});
+        const pokemonOne= await this.pokemon.findById(pokemonOneId);
+        const pokemonTwo= await this.pokemon.findById(pokemonTwoId);
         if(!pokemonOne || !pokemonTwo){
             throw new HttpException(409, "You're not pokemon");
         }
