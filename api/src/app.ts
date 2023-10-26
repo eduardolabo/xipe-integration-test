@@ -111,7 +111,6 @@ class App {
 
     } else {
       mongoose.set("strictQuery", false);
-      console.log(MONGO_BASE_DB, MONGO_USER)
       mongoose.connect(
         MONGO_CONNECTION_VERB +
           "://" +

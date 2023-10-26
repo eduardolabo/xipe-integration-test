@@ -1,6 +1,6 @@
 # xipe-integration-test
 
-Environment
+####Environment
 
 ```
 Node : 18.15.0
@@ -11,14 +11,19 @@ OR
 Docker
 ```
 
-Please follw the below steps:
+####Instructions to run the project:
 
 ```
 git clone https://github.com/eduardolabo/xipe-integration-test
 cd xipe-integration-test
-##For Docker##
 docker compose up
 ```
 
-Swagger documentation sample can be found at `http://localhost:<port>/api/api-docs`
+Swagger documentation can be found at `http://localhost:<port>/api/api-docs`
 Default port 8080
+
+
+####Excercise
+```
+Implement the startTournament function found in /api/src/services/tournament.service.ts
+```

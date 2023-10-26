@@ -21,7 +21,6 @@ export class AuthController extends Controller {
   @Security("jwt", [])
   public async getMe(@Request() request: any) {
     try {
-      console.log("getMe");
       return this.authService.getMe(request);
     } catch (error) {
       throw new Error(error);

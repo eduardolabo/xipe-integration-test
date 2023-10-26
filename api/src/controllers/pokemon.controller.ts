@@ -45,14 +45,12 @@ export class PokemonController extends Controller {
     @Get("/trainer/{trainerId}")
     @Security("jwt", [Permissions.USER_READ])
     public async getTrainer(@Request() request: any, @Path('trainerId') trainerId: string) {
-        console.log("getTrainerById");
         return await this.trainerService.findTrainerById(trainerId);
     }
 
     @Post("/trainer")
     @Security("jwt", [Permissions.USER_READ])
     public async createTrainer(@Request() request: any, @Body() trainerData: CreateTrainerDto) {
-        console.log("createTrainer");
         return await this.trainerService.createTrainer(trainerData);
     }
 }
