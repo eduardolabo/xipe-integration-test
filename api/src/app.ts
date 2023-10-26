@@ -111,6 +111,7 @@ class App {
 
     } else {
       mongoose.set("strictQuery", false);
+      console.log(MONGO_BASE_DB, MONGO_USER)
       mongoose.connect(
         MONGO_CONNECTION_VERB +
           "://" +
@@ -119,7 +120,7 @@ class App {
           MONGO_PASSWORD +
         "@"+
           MONGO_PATH,
-        {dbName: MONGO_BASE_DB}
+        {dbName: MONGO_BASE_DB, useNewUrlParser: true, useUnifiedTopology: true},
       )  .then(() => console.log('Connected to database.'))
         .catch(err => console.error('Error connecting to database:', err.message));
     }

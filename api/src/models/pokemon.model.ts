@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import {MongoInterface} from "../utils/mongo.interface";
 
-const pokemonSchema = new mongoose.Schema({
+const pokemonSchema = new mongoose.Schema<Pokemon>({
     name: { type: String, required: true },
     types: { type: Array, of: String },
     moves: { type: Array, of: String },

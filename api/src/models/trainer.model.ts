@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import {MongoInterface} from "../utils/mongo.interface";
 import {Pokemon} from "../models/pokemon.model";
 
-const trainerSchema = new mongoose.Schema({
+const trainerSchema = new mongoose.Schema<Trainer>({
     name: { type: String, required: true },
     pokemonOne: {type: mongoose.Types.ObjectId, ref: "Pokemon"},
     pokemonTwo: {type: mongoose.Types.ObjectId, ref: "Pokemon"},

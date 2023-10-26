@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import * as R from "ramda";
 import {MongoInterface} from "../utils/mongo.interface";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<User>({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   permissions: { type: Array, of: String },

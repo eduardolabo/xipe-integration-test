@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import {MongoInterface} from "../utils/mongo.interface";
 import {Trainer} from "./trainer.model";
 
-const tournamentSchema = new mongoose.Schema({
+const tournamentSchema = new mongoose.Schema<Tournament>({
     trainerOne: [{type: mongoose.Types.ObjectId, ref: "Trainer"}],
     trainerTwo: [{type: mongoose.Types.ObjectId, ref: "Trainer"}],
     trainerThree: [{type: mongoose.Types.ObjectId, ref: "Trainer"}],
