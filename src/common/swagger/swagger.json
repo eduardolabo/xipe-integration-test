@@ -1,0 +1,679 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Permissions": {
+				"enum": [
+					"user:read",
+					"user:create",
+					"user:write",
+					"user:delete",
+					"pokemon:read",
+					"pokemon:create",
+					"pokemon:write",
+					"pokemon:delete"
+				],
+				"type": "string"
+			},
+			"signInOptions": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"permissions": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"_id",
+					"username",
+					"permissions"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"signUpOptions": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pokemon": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"types": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"moves": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"level": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"types",
+					"moves",
+					"level"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePokemonDto": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"types": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"moves": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"level": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"types",
+					"moves",
+					"level"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Trainer": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"pokemonOne": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"pokemonTwo": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"pokemonThree": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"pokemonFour": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"pokemonFive": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"pokemonSix": {
+						"$ref": "#/components/schemas/Pokemon"
+					},
+					"isChamp": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"pokemonOne",
+					"pokemonTwo",
+					"pokemonThree",
+					"pokemonFour",
+					"pokemonFive",
+					"pokemonSix",
+					"isChamp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateTrainerDto": {
+				"properties": {
+					"pokemonOneId": {
+						"type": "string"
+					},
+					"pokemonTwoId": {
+						"type": "string"
+					},
+					"pokemonThreeId": {
+						"type": "string"
+					},
+					"pokemonFourId": {
+						"type": "string"
+					},
+					"pokemonFiveId": {
+						"type": "string"
+					},
+					"pokemonSixId": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"isChamp": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"pokemonOneId",
+					"pokemonTwoId",
+					"pokemonThreeId",
+					"pokemonFourId",
+					"pokemonFiveId",
+					"pokemonSixId",
+					"name",
+					"isChamp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateUserDto": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	},
+	"info": {
+		"title": "base-api",
+		"version": "0.1.0",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/auth/me": {
+			"get": {
+				"operationId": "GetMe",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/auth/permissions": {
+			"get": {
+				"operationId": "PermissionList",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Permissions"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:write"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"operationId": "SignIn",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"token": {
+											"type": "string"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"token",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/signInOptions"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/create-user": {
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/signUpOptions"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/pokemon": {
+			"get": {
+				"operationId": "GetPokemons",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Pokemon"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pokemon"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreatePokemon",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Pokemon"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pokemon"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePokemonDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/pokemon/{pokemonId}": {
+			"get": {
+				"operationId": "GetPokemon",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Pokemon"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pokemon"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "pokemonId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/pokemon/trainer/{trainerId}": {
+			"get": {
+				"operationId": "GetTrainer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Trainer"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pokemon"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "trainerId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/pokemon/trainer": {
+			"post": {
+				"operationId": "CreateTrainer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Trainer"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pokemon"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTrainerDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/User"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user:read"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/{userId}": {
+			"get": {
+				"operationId": "GetUserById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api"
+		}
+	]
+}
